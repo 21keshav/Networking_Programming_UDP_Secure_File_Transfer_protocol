@@ -1,0 +1,184 @@
+Group Members
+==============
+Member 1
+--------
+Name 	: Keshav Velhal
+SBU ID	: 110276432
+Email	: keshav.velhal@stonybrook.edu
+
+Member 2
+--------
+Name	: Neeraj Dixit
+SBU ID	: 109951838
+Email	: ndixit@cs.stonybrook.edu
+
+
+
+USER Documentation:
+===================
+- The complete assignment consists of 2 .C file namely server.c, client.c,
+  and the Makefile and README
+- To compile the assignment just run the command 'make' in the assignment
+  directory
+- To clean the executable files just run the command 'make clean' in the
+  assignment directory
+- To invoke the server just execute 'server' executable
+- To invoke the client just execute 'client' executable
+- The server and client configuration are entered in client.in and server.in files
+- The client.in and server.in files should be present in the code directory
+- The file to be transferred should also be present in the code directory
+
+
+System Documentation:
+=====================
+Part I Assignment
+-----------------
+- Server reads data from the server.in file to read parameters of operation.
+  It obtains the details of all network interfaces using get_ifi_info and maintains in
+  'sockdetails' array of structures. It monitors all the interfaces via select.
+  
+- The client's parameters for operation of protocol are read from client.in file.
+
+- Client obtains the details of all network interfaces using get_ifi_info.
+  Client also checks whether the server and client are on same host, same subnet or
+  different. Message is printed on client window indicating the same. Socket is set 
+  to SO_DONTROUTE when server is on same host or same subnet.
+  
+- Client creates a UDP socket and binds the Client IP on Port 0 i.e ephemeral port
+  and gets details using getsockname (displayed on stdout)
+
+- Client now connects to Well Known port of the server read from client.in.
+  Client gets details of Server Ip Address and its Ephemeral Port using 
+  getpeername (displayed on stdout)
+  
+- Client now  sends the file name which is backed up by a ARQ mechanism
+
+- Server now recives the Client IP, its Ephemeral port and file name using recvfrom 
+  on the socket which the client has sent the details.Server now sends an ACK that it 
+  has received the file name to be sent to the client
+
+- Server creates server child after receiving client request.Server child now stores 
+  details of the listening socket i.e socket on which it has received file name.It also
+  closes other sockets in the  array of structures
+
+- Server child also checks if client is on same host, same subnet and different subnet.
+  It is printed on server window.Socket is set to SO_DONTROUTE when client is on same
+  host or same subnet (displayed on stdout)
+  
+- Server child now  creates connection socket for handling file transfer. It binds the 
+  Server Ip Address and its Ephemeral Port to connection socket. Server now sends 
+  its IP Address and Ephemeral Port to the client on the listening Socket which 
+  backed up  with ARQ mechanism. After Server receives the ACK it closes the
+  listening Socket
+  
+- The client then re-connects to this Servers Connection socket. The status is displayed
+  on the client window. It can now receive the file from the server
+  
+- When a Datagram or Packet with data arrives to the client it drops or accepts the datagram
+  depending upon the probability read from client.in file
+
+- All of the above points are commented in the code indicating explaining the code.
+
+
+
+Part II Assignment
+------------------
+- All parts of TCP reliability are completed in the assignment
+
+- Every packet has 30 bytes of header and 512-30 = 482 characters is the max payload
+  in each packet. The header of the packet is assumed as follows:
+  a) (0 - 5)	Sequence number of packet
+  b) (5 - 10)	Acknowledgement of packet
+  c) (10 - 15)	Window size of sender
+  d) (15 - 16)	Finish Bit (This bit is set if it is last datagram)
+  e) (16 - 30)	Reserved bits for future use
+
+- The TCP like reliability is achieved via the following parameters:
+1) TCP sequence numbers and ACK
+   For this assignment, the TCP sequence numbers are based on datagram numbers and 
+   NOT on number of bytes. The acknowledgement numbers are realized by their index
+   in the 'packet' array. The sequence numbers and acknowledgement numbers are
+   displayed on the screen for better presentation of TCP like behaviour
+   
+2) Sliding Window Protocol
+   The client and server window sizes are read from the file. This window operation 
+   is maintained via variables 'window_start' and 'window_end'. The algorithm ensures
+   that no packet is sent/received beyond window size. The server & child prints out
+   message on window when the window becomes full. (Explained via comments in code)
+   
+3) Re-Transmission of Lost Datagrams and Timeout
+   The server uses 'select' on connection socket with timout to monitor incoming
+   datagrams as well as timout. Packets are marked for re-transmission when there
+   is a timeout. The Stevens book codes for is used for adjusting the RTO value
+   after datagram reception and timeout. (Explained via comments in code)
+   
+4) Flow Control
+   The client puts the available window size in every acknowledgement sent to the
+   server. The server adjusts its send_size according to this received window size.
+   The received window size is printed after reception of every datagram and
+   acknowledgement. The server and client print out a message on console if the window
+   size shrinks to zero (Explained via comments in code)
+
+5) Congestion Control
+   The congestion control is achieved via the following parameters:
+   a) Congestion Avoidance
+	  Congestion avoidance is achieved when timout occurs. We reduce the congestion
+	  window back to 1 when timeout occurs. Also the ssthresh is reduced to half.
+	  Timeout implies that network is congested and hence we use above measures
+	  for congestion avoidance
+   
+   b) Fast Re-transmit
+	  Instead of timing out, we also send duplicate acknowledgement for datagrams
+	  received out of order. We re-transmit the datagram when number of duplicate
+	  acknowledgements exceed 3
+	  
+   c) Slow Start
+	  We have the used the 'TCP Tahoe' algorithm for congestion avoidance. The
+	  congestion window increases exponentially till it reaches ssthresh. After
+	  ssthresh the congestion window increases linearly
+   
+   d) Cumulative ACK
+	  We are buffering the packets which are received out of order. We are sending
+	  cumulative ACK for datagrams once missing datagram arrives. This behaviour can
+	  be seen from the acknowledgement numbers displayed on client window.
+
+   The final send size of sliding window is selected taking inputs of congestion window,
+   client received window and server window size. (Explained in detail in code comments)
+   
+6) Printing file contents
+   The contents of the datagram are printed out via a separate thread. This single
+   thread sleeps for a specific time based on value obtained from client.in file.
+   The thread accesses window start and message buffer via 'buffer_mutex' mutex.
+   As the printing is in separate thread, it does not interrupt the sliding window
+   thread. (Explained via comments in code)
+   
+7) Graceful Finish
+   a) To achieve TCP like behaviour, we write an empty packet on the UDP socket when server
+	  finishes the file transfer. This empty write signals the other side that
+      connection is terminated from server side
+	  
+   b) While creating packets we set the Finish flag in packet when we read the EOF. This
+	  finish flag is sent to client so that it knows it is last datagram of transfer
+	  
+   c) The client waits for TIMED_WAIT after the reception of last datagram
+
+
+Program Documentation:
+======================
+- Appropriate comments are added in all source files
+- The status message on the screen clearly indicates the occurence of any
+  error (if any) or the status of the code block when it is successfully run
+- The operation of TCP like implementation is displayed via print messages in
+  client and server windows
+  
+  
+Test Documentation:
+=====================
+The program is tested and verified for various combination of inputs consisting of:
+1) Server/Client window size
+2) Different drop probability on client side
+3) Server/Client on same host, same subnet and different subnets
+4) Different sizes of transfer file consisting of 1 packet to 386 packets
+5) Simultaneous file transfer from multiple clients is also tested and verified
+6) Various negative test cases which include 0 window size, incorrect server/client
+   address, transfer file absent, 100% drop probability, very high sleep time
