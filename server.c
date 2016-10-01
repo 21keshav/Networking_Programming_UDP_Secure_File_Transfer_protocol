@@ -6,7 +6,7 @@ extern struct ifi_info *Get_ifi_info_plus(int family, int doaliases);
 extern void free_ifi_info_plus(struct ifi_info *ifihead);
 
 #define	MAX_SIZE		1000
-#define	DATAGRAM_SIZE	512
+#define	DATAGRAM_SIZE		512
 #define	HEADER_SIZE		30
 #define	PAYLOAD_SIZE	DATAGRAM_SIZE - HEADER_SIZE
 #define	MAX_PACKETS		2000
@@ -626,7 +626,7 @@ handle_server_child( int listen_soc,
 	return 0;
 }
 int main() {
-	int					status = 0;
+	int			status = 0;
 	server_input		server_data;
     	struct ifi_info 	*ifi, *ifihead;
     	struct sockaddr_in 	*temp_addr, server_addr, client_addr;
@@ -771,7 +771,7 @@ int main() {
 	                /* Store Listening Socket on which File name is Recived*/			
 					listen_soc = sockdetails[iter].soc_fd; 	
 				} else {
-                    /* Close Sockets of other Associated IP Address */				
+                    	/* Close Sockets of other Associated IP Address */				
 					close(sockdetails[iter].soc_fd);
 				}
 			}
@@ -781,7 +781,7 @@ int main() {
 	            
 				/* Checks if Client  is on Same Host i.e 127.0.0.1 */
 				client_loc = CLIENT_SAME_HOST;
-                printf("\nClient is on Same Host...");
+              		  printf("\nClient is on Same Host...");
 				
 				/* Set Socket Option to SO_DONTROUTE if Client is on same host */
 				status = setsockopt(listen_soc, SOL_SOCKET, SO_DONTROUTE, &rstsock, sizeof(rstsock));
@@ -838,7 +838,7 @@ int main() {
 				}
 			}
 
-            if(client_loc == CLIENT_DIFF_SUBNET){
+          	 if(client_loc == CLIENT_DIFF_SUBNET){
 				/* Checks if Client  is not on Same Subnet */ 
 				printf("\nClient is on different subnet i.e it is not Local  ...");
 			}
