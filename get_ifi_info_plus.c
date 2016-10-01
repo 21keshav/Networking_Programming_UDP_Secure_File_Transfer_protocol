@@ -5,8 +5,8 @@ struct ifi_info *
 get_ifi_info_plus(int family, int doaliases)
 {
 	struct ifi_info		*ifi, *ifihead, **ifipnext;
-	int					sockfd, len, lastlen, flags, myflags, idx = 0, hlen = 0;
-	char				*ptr, *buf, lastname[IFNAMSIZ], *cptr, *haddr, *sdlname;
+	int			sockfd, len, lastlen, flags, myflags, idx = 0, hlen = 0;
+	char			*ptr, *buf, lastname[IFNAMSIZ], *cptr, *haddr, *sdlname;
 	struct ifconf		ifc;
 	struct ifreq		*ifr, ifrcopy;
 	struct sockaddr_in	*sinptr;
