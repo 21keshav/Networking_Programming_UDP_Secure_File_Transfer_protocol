@@ -13,25 +13,24 @@
 #define	TIMED_WAIT		1
 #define	MAX_SLEEP_TIME	1000
 
-int						expected_ack;
-int						client_soc_copy;
-int						client_window_locked = 0;
-int                     adver_window;
-int						received_seq[MAX_PACKETS];
-int						window_start = 0;
-char					msgprint[MAX_PACKETS][MAX_SIZE];
-pthread_mutex_t 		buffer_mutex = 
-						PTHREAD_MUTEX_INITIALIZER;
+int	expected_ack;
+int	client_soc_copy;
+int	client_window_locked = 0;
+int     adver_window;
+int	ceived_seq[MAX_PACKETS];
+int	window_start = 0;
+char	msgprint[MAX_PACKETS][MAX_SIZE];
+pthread_mutex_t buffer_mutex =	PTHREAD_MUTEX_INITIALIZER;
 
 /* Structure to hold client operation parameters */ 
 typedef struct client_input_ {
 	char	*server_ip;
-	int		server_port;
+	int	server_port;
 	char	*file_name;
-	int		sl_window_size;
-	int		seed_value;
+	int	sl_window_size;
+	int	seed_value;
 	double	prob;
-	int		mean_time;
+	int	mean_time;
 } client_input;
 
 /* Enum for server location */
@@ -87,7 +86,7 @@ int
 get_client_data(struct client_input_	*client_data) {
 	char	file_line[MAX_SIZE], *ptr_ret = NULL;
 	FILE	*fp = NULL;
-	int		no_chars = 0, status = 0;
+	int	no_chars = 0, status = 0;
 	
 
 	fp = fopen("client.in", "r");
@@ -249,7 +248,7 @@ print_routine(void 	*data)	{
 	int 	status, fin;
 	int 	mean_time = *(int *)data;
 	float 	randomnum;
-	int		print_ptr = 0;
+	int	print_ptr = 0;
 
 	while(1)	{
 		pthread_mutex_lock(&buffer_mutex);	
@@ -301,7 +300,7 @@ print_routine(void 	*data)	{
 /* Probability Function to decide whether Packet is Dropped or Accepted
    Depending uopn Randomno Generator */
 int
-LossProbability(float 					probabilityloss,
+LossProbability(float 	probabilityloss,
                 probability_result      packetprobabilityn){
 	float randomnum;
 	randomnum=(float)(rand())/(RAND_MAX);
@@ -547,23 +546,23 @@ receive_file(int	client_soc,
 	return 0;
 }
 int main() {
-	int						status = 0;
+	int				status = 0;
 	client_input			client_data;
 	struct ifi_info 		*ifi,*ifihead;
-    struct sockaddr_in 		*temp_addr, *temp_mask, IP_client, IP_server;
+  	struct sockaddr_in 		temp_addr, *temp_mask, IP_client, IP_server;
 	struct sockaddr_in		subnetaddr1, subnetaddr2, IP_server_conn;
 	struct sockaddr_in 		ephemeral_client, ephemeral_server;
-	char 					temp_addr1[INET_ADDRSTRLEN];
-	char 					temp_addr2[INET_ADDRSTRLEN];
-    char 					*subnet1,*subnet2;
-	int     				soc_fd, ephemeral_port, ephemeral_soc;
+	char 				temp_addr1[INET_ADDRSTRLEN];
+	char 				temp_addr2[INET_ADDRSTRLEN];
+  	char 				*subnet1,*subnet2;
+	int     			soc_fd, ephemeral_port, ephemeral_soc;
 	server_location			server_loc = SERVER_NONE;
 	struct sockaddr_in 		client_soc;
-	socklen_t				client_soc_len, server_len;
+	socklen_t			client_soc_len, server_len;
 	struct sockaddr_in 		peer_addr;
-	int						soc_option, server_ephemeral;
+	int				soc_option, server_ephemeral;
 	struct timeval 			timeout;
-	char 					filenameack[MAX_SIZE];
+	char 				filenameack[MAX_SIZE];
 	
 	status = get_client_data(&client_data);
 	if (status != 0) {
