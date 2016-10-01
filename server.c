@@ -140,7 +140,7 @@ minf( int rwnd,
 int arq_sendrecvmechanism(int connfd,
 						 char  *buffer
 						 ){  
-    int    status;
+   	int    status;
 	struct timeval 		timeout;
 	struct sockaddr_in 	IP;
 	socklen_t           IP_len;
@@ -174,7 +174,7 @@ int
 get_server_data(struct server_input_	*server_data) {
 	char	file_line[MAX_SIZE], *ptr_ret = NULL;
 	FILE	*fp = NULL;
-	int		no_chars = 0, status = 0;
+	int	no_chars = 0, status = 0;
 	
 	fp = fopen("server.in", "r");
 	if (fp == NULL) {
@@ -248,8 +248,8 @@ fill_packet_data(char	*packet,
 /* Utility Function to retrieve Details from Acknowledment Header */
 int
 get_packet_data(char	*packet,
-				int		data_size,
-				int		*ret) {
+		int data_size,
+		int *ret) {
 	char	number[30];
 	int		iter, ans = 0;
 	
@@ -263,24 +263,24 @@ get_packet_data(char	*packet,
 
 /* Handling of File Transfer from server child */
 int
-initiate_file_transfer(	int		conn_soc,
-						char	*file_name,
-						int		window_size ) {
-	char				packet[MAX_PACKETS][520], temp;
-	FILE				*fp = NULL;
-	int					no_chars = 0, file_end = 0;
-	int					sequence_no = 0, status, iter;
-	socklen_t			len;
-	char				msg[MAX_SIZE];
+initiate_file_transfer(	int conn_soc,
+			char	*file_name,
+			int window_size ) {
+	char	packet[MAX_PACKETS][520], temp;
+	FILE	*fp = NULL;
+	int	no_chars = 0, file_end = 0;
+	int	sequence_no = 0, status, iter;
+	socklen_t len;
+	char 	msg[MAX_SIZE];
 	struct sockaddr_in  recv_struct;
-	int					ack_no, send_ptr, send_size, cwnd;
-	int					window_start, window_end;
-	int					received_seq[MAX_PACKETS];
-	int                 fin, dup_ack_count, last_ack_no;
+	int ack_no, send_ptr, send_size, cwnd;
+	int window_start, window_end;
+	int received_seq[MAX_PACKETS];
+	int fin, dup_ack_count, last_ack_no;
 	struct rtt_info		rtt_data;
 	struct timeval 		timeout;
-	uint32_t			time_start, time_end;
-	int					ssthresh, rwnd = 1;
+	uint32_t		time_start, time_end;
+	int			ssthresh, rwnd = 1;
 	
 	fp = fopen(file_name, "r");
 	
@@ -533,20 +533,19 @@ initiate_file_transfer(	int		conn_soc,
 
 /* Handling Of server Child */
 int
-handle_server_child( int				listen_soc,
-					 sockdata 			*server_data,
-					 struct sockaddr_in	*client_IP,
-					 char				*file_name,
-					 int				window_size) {
-	int					conn_soc, status;
+handle_server_child( int listen_soc,
+		     sockdata 	*server_data,
+		     struct sockaddr_in	*client_IP,
+		     char *file_name,
+		     int window_size) {
+	int conn_soc, status;
 	struct sockaddr_in	server_addr;
 	struct sockaddr_in 	server_soc;
 	struct sockaddr_in	ephemeral_cli_ack;
-	socklen_t			server_len;
-	char 				temp[INET_ADDRSTRLEN];
-	char                tempack[MAX_SIZE];
-	int					ephemeral_port;
-	
+	socklen_		server_len;
+	char 			temp[INET_ADDRSTRLEN];
+	char	                tempack[MAX_SIZE];
+	int			ephemeral_port;
 	conn_soc = socket(AF_INET,SOCK_DGRAM, 0);		
 	if (conn_soc < 0) {
 		printf("\nStatus = %d, Unable to create socket !!!",conn_soc);
@@ -629,21 +628,21 @@ handle_server_child( int				listen_soc,
 int main() {
 	int					status = 0;
 	server_input		server_data;
-    struct ifi_info 	*ifi, *ifihead;
-    struct sockaddr_in 	*temp_addr, server_addr, client_addr;
-    sockdata 			sockdetails[MAX_SIZE];
-	const int 			rstsock = 1;
-	int 				soc_fd, max_fd, iter, sock_flag;
-	char 				temp_addr1[INET_ADDRSTRLEN];
-	int 				len = 0;
-	char				msg[MAX_SIZE],ipaddr[MAX_SIZE];
-	int 				client_len;
-	char				file_name[MAX_SIZE];
-	pid_t               pid;
-	int 				listen_soc;
+    	struct ifi_info 	*ifi, *ifihead;
+    	struct sockaddr_in 	*temp_addr, server_addr, client_addr;
+    	sockdata		sockdetails[MAX_SIZE];
+	const int		rstsock = 1;
+	int 			soc_fd, max_fd, iter, sock_flag;
+	char 			temp_addr1[INET_ADDRSTRLEN];
+	int 			len = 0;
+	char			msg[MAX_SIZE],ipaddr[MAX_SIZE];
+	int 			client_len;
+	char			file_name[MAX_SIZE];
+	pid_t          		 pid;
+	int 			listen_soc;
 	struct sockaddr_in	subnetaddr1, subnetaddr2;
-	char 				temp_addr2[INET_ADDRSTRLEN];
-	char 				temp_addr3[INET_ADDRSTRLEN];
+	char 			temp_addr2[INET_ADDRSTRLEN];
+	char 			temp_addr3[INET_ADDRSTRLEN];
 	client_location		client_loc = CLIENT_NONE;
 	
 	/* Read the server.in file to get operating parameters */
